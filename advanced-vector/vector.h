@@ -1,4 +1,4 @@
-// Черепухин Евгений Сергеевич. Итоговый проект 13 спринта. Версия 1.
+// Черепухин Евгений Сергеевич. Итоговый проект 13 спринта. Версия 2.
 #pragma once
 #include <cassert>
 #include <cstdlib>
@@ -266,8 +266,10 @@ public:
     }
 
     void PopBack() /* noexcept */ {
-        std::destroy_n(data_.GetAddress() + Size() - 1, 1);
-        size_--;
+        if (size_ > 0) {
+            std::destroy_n(data_.GetAddress() + Size() - 1, 1);
+            size_--;
+        }        
     }
 
     template <typename... Args>
@@ -292,6 +294,7 @@ public:
 
     template <typename...Args>
     iterator Emplace(const_iterator pos, Args&&... args) {
+        assert(pos >= begin() && pos <= end());
         int position = pos - begin();
         if (data_.Capacity() > Size()) {
             try {
@@ -333,6 +336,7 @@ public:
     }
 
     iterator Erase(const_iterator pos) {
+        assert(pos >= begin() && pos <= end());
         int position = pos - begin();
         std::move(begin() + position + 1, end(), begin() + position);
         std::destroy_at(end() - 1);
